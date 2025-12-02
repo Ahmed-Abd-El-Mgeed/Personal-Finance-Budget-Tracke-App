@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import Charts
 
 struct HomeView: View {
+    @StateObject private var viewModel = HomeViewModel()
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -17,11 +20,18 @@ struct HomeView: View {
                     VStack(spacing: 10) {
                         headerSection
                         balanceCardSection
+                        analyticsSection
                         Spacer(minLength: 20)
                     }
                 }
             }
             .navigationBarHidden(true)
+            .onAppear {
+                viewModel.updateBalances()
+                let transactions = TransactionManager.getAllTransactions()
+                print("ALLData\(transactions)")
+
+            }
         }
     }
 }
@@ -45,7 +55,7 @@ private extension HomeView {
                 Text("Welcome back,")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                Text("Ahmed")
+                Text(viewModel.userName)
                     .font(.title2)
                     .fontWeight(.bold)
             }
@@ -97,9 +107,9 @@ private extension HomeView {
         VStack(alignment: .center, spacing: 8) {
             Text("Total Balance")
                 .font(.headline)
-                .foregroundColor(.white.opacity(0.7))
-            Text("$24,562.00")
-                .font(.system(size: 36, weight: .bold))
+                .foregroundColor(.white.opacity(0.9))
+            Text(viewModel.totalBalance)
+                .font(.system(size: 50, weight: .bold))
                 .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -120,7 +130,7 @@ private extension HomeView {
                     Text("Income")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
-                    Text("$4,250")
+                    Text(viewModel.income)
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -145,7 +155,7 @@ private extension HomeView {
                     Text("Expense")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
-                    Text("$1,890")
+                    Text(viewModel.expense)
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -154,12 +164,140 @@ private extension HomeView {
         }
         .frame(maxWidth: .infinity)
     }
+    
+    var analyticsSection: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Text("Analytics")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                Spacer()
+                
+                // Period Picker Button
+                Button(action: {
+                    viewModel.showPeriodPicker.toggle()
+                }) {
+                    HStack(spacing: 5) {
+                        Text(viewModel.selectedPeriod.rawValue)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .actionSheet(isPresented: $viewModel.showPeriodPicker) {
+                    ActionSheet(
+                        title: Text("Select Period"),
+                        buttons: AnalyticsPeriod.allCases.map { period in
+                            .default(Text(period.rawValue)) {
+                                viewModel.selectPeriod(period)
+                            }
+                        } + [.cancel()]
+                    )
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 15)
+            
+            // Chart Card
+            ZStack {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.white)
+                    .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+                
+                VStack(alignment: .leading, spacing: 20) {
+                    // Legend
+                    HStack(spacing: 8) {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 10, height: 10)
+                        Text("Expenses")
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                    }
+                    
+                    // Chart
+                    Chart(viewModel.currentExpenseData) { item in
+                        LineMark(
+                            x: .value("Period", item.label),
+                            y: .value("Value", item.value)
+                        )
+                        .foregroundStyle(Color.black)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                        .interpolationMethod(.catmullRom)
+                        
+                        AreaMark(
+                            x: .value("Period", item.label),
+                            y: .value("Value", item.value)
+                        )
+                        .foregroundStyle(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.gray.opacity(0.3), Color.clear]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .interpolationMethod(.catmullRom)
+                        
+                        if let selectedLabel = viewModel.selectedLabel, selectedLabel == item.label {
+                            PointMark(
+                                x: .value("Period", item.label),
+                                y: .value("Value", item.value)
+                            )
+                            .foregroundStyle(Color.black)
+                            .symbolSize(100)
+                            
+                            RuleMark(x: .value("Period", item.label))
+                                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
+                                .foregroundStyle(Color.gray.opacity(0.5))
+                                .annotation(position: .bottom, spacing: 10) {
+                                    VStack(spacing: 5) {
+                                        Text(item.label)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        Text("value : \(Int(item.value))")
+                                            .font(.subheadline)
+                                    }
+                                    .padding(.horizontal, 15)
+                                    .padding(.vertical, 10)
+                                    .background(Color.white)
+                                    .cornerRadius(12)
+                                    .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                }
+                        }
+                    }
+                    .frame(height: 200)
+                    .chartXAxis {
+                        AxisMarks(values: .automatic) { value in
+                            if let label = value.as(String.self) {
+                                AxisValueLabel {
+                                    Text(label)
+                                        .font(.caption)
+                                        .foregroundStyle(viewModel.selectedLabel == label ? Color.black : Color.gray)
+                                        .fontWeight(viewModel.selectedLabel == label ? .semibold : .regular)
+                                        .onTapGesture {
+                                            viewModel.selectedLabel = label
+                                        }
+                                }
+                            }
+                        }
+                    }
+                    .chartYAxis(.hidden)
+                    .chartXSelection(value: $viewModel.selectedLabel)
+                }
+                .padding(25)
+            }
+            .padding(.horizontal, 20)
+        }
+    }
 }
 
 // MARK: - Preview
 #Preview {
     HomeView()
 }
-
-
 

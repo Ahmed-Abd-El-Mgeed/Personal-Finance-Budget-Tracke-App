@@ -84,6 +84,7 @@ class LoginViewModel: ObservableObject {
             self?.isLoading = false
             switch result {
             case .success:
+                DefaultManager.setLoggedIn(true)
                 completion(true)
             case .failure(let error):
                 self?.loginError = error.localizedDescription

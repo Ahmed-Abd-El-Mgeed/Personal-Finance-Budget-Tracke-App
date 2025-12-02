@@ -8,25 +8,46 @@
 import SwiftUI
 import IQKeyboardManagerSwift
 import FirebaseCore
-
+import RealmSwift
+import Realm
 
 @main
-struct Personal_FinanceApp: App {
+struct Personal_FinanceApp: SwiftUI.App {
     
     @StateObject var flow = SplashFlowViewModel()
     
     init() {
-           IQKeyboardManager.shared.isEnabled = true
-           IQKeyboardManager.shared.resignOnTouchOutside = true
+        // MARK: - Keyboard Manager
+        IQKeyboardManager.shared.isEnabled = true
+        IQKeyboardManager.shared.resignOnTouchOutside = true
         
-           // Firebase setup
-            FirebaseApp.configure()
-       }
-      
-      var body: some Scene {
-          WindowGroup {
-              RootView()
-                  .environmentObject(flow)
-          }
-      }
+        // MARK: - Firebase
+        FirebaseApp.configure()
+        
+        // MARK: - Realm Migration
+        let config = Realm.Configuration(
+            schemaVersion: 2,
+            migrationBlock: { migration, oldSchemaVersion in
+                if oldSchemaVersion < 2 {
+                    migration.enumerateObjects(ofType: "TransactionModel") { oldObject, newObject in
+                        // Handle old 'amount' property if it exists
+                        if let oldAmount = oldObject?["amount"] as? Double {
+                            newObject?["totalAmount"] = oldAmount
+                            newObject?["expenseAmount"] = oldAmount
+                            newObject?["incomeAmount"] = 0.0
+                        }
+                    }
+                }
+            }
+        )
+        
+        Realm.Configuration.defaultConfiguration = config
+    }
+    
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environmentObject(flow)
+        }
+    }
 }

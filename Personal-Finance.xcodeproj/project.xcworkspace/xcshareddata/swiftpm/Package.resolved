@@ -1,5 +1,5 @@
 {
-  "originHash" : "2a1d05c9c39ca709d9706bfef503729ea323352b70da923ca0159696772f6808",
+  "originHash" : "80f356045ad2572b91615f8431bacb60fa87ff3b62b32dddad8609505a26a9a7",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -197,6 +197,24 @@
       "state" : {
         "revision" : "540318ecedd63d883069ae7f1ed811a2df00b6ac",
         "version" : "2.4.0"
+      }
+    },
+    {
+      "identity" : "realm-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-core.git",
+      "state" : {
+        "revision" : "cccb3ca9e26ec452a29f2f0d4050d1e38b8a3d43",
+        "version" : "14.14.0"
+      }
+    },
+    {
+      "identity" : "realm-swift?utm_source=chatgpt.com",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-swift?utm_source=chatgpt.com",
+      "state" : {
+        "branch" : "master",
+        "revision" : "c22f9303d446fc3c044e4c151ed19597464b6bd7"
       }
     },
     {

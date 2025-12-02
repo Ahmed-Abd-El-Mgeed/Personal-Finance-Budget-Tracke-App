@@ -7,10 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3623E6712EDDA88E00679870 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3623E6702EDDA88E00679870 /* RealmSwift */; };
+		3623E6742EDDA91800679870 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 3623E6702EDDA88E00679870 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		362469F62ED5F20700606B61 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 362469F52ED5F20700606B61 /* IQKeyboardManagerSwift */; };
 		36246A022ED71E9F00606B61 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 36246A012ED71E9F00606B61 /* FirebaseAuth */; };
 		365F3D5F2ED8452C00FFD71A /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = 365F3D5E2ED8452C00FFD71A /* JDStatusBarNotification */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3623E6732EDDA91700679870 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3623E6742EDDA91800679870 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		362469FB2ED62D3E00606B61 /* Personal-Finance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Personal-Finance.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -31,6 +47,7 @@
 			files = (
 				365F3D5F2ED8452C00FFD71A /* JDStatusBarNotification in Frameworks */,
 				362469F62ED5F20700606B61 /* IQKeyboardManagerSwift in Frameworks */,
+				3623E6712EDDA88E00679870 /* RealmSwift in Frameworks */,
 				36246A022ED71E9F00606B61 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -64,6 +81,7 @@
 				36EADB032ECDB4C800E5DB66 /* Sources */,
 				36EADB042ECDB4C800E5DB66 /* Frameworks */,
 				36EADB052ECDB4C800E5DB66 /* Resources */,
+				3623E6732EDDA91700679870 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -77,6 +95,7 @@
 				362469F52ED5F20700606B61 /* IQKeyboardManagerSwift */,
 				36246A012ED71E9F00606B61 /* FirebaseAuth */,
 				365F3D5E2ED8452C00FFD71A /* JDStatusBarNotification */,
+				3623E6702EDDA88E00679870 /* RealmSwift */,
 			);
 			productName = "Personal-Finance";
 			productReference = 362469FB2ED62D3E00606B61 /* Personal-Finance.app */;
@@ -110,6 +129,7 @@
 				362468C72ED5EB3C00606B61 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				362469F42ED5F20700606B61 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				365F3D5D2ED8452C00FFD71A /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */,
+				3623E66D2EDDA88E00679870 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 36EADAFE2ECDB4C800E5DB66;
@@ -357,6 +377,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3623E66D2EDDA88E00679870 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift?utm_source=chatgpt.com";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		362468C72ED5EB3C00606B61 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -384,6 +412,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3623E6702EDDA88E00679870 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3623E66D2EDDA88E00679870 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
 		362469F52ED5F20700606B61 /* IQKeyboardManagerSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 362469F42ED5F20700606B61 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
