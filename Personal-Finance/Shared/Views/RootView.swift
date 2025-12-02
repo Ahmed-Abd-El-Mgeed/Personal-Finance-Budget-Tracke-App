@@ -15,7 +15,7 @@ struct RootView: View {
         case .splash: SplashView()
         case .onboarding: OnboardingView()
         case .login: LoginView()
-        case .home: HomeView()
+        case .home: TabBarView()
         }
     }
 }

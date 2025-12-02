@@ -28,7 +28,7 @@ class SplashFlowViewModel: ObservableObject {
         } else if DefaultManager.isLoggedIn() == false {
             state = .login
         } else {
-            state = .login
+            state = .home
         }
     }
 
