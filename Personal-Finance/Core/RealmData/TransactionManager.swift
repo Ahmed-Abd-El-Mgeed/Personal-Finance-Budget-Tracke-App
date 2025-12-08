@@ -26,7 +26,7 @@ class TransactionManager {
     // MARK: - Total amount (income + expense)
     static func getTotalAmount() -> Double {
         let transactions = getAllTransactions()
-        return transactions.reduce(0) { $0 + $1.incomeAmount + $1.expenseAmount }
+        return transactions.reduce(0) { $0 + $1.incomeAmount - $1.expenseAmount }
     }
     
     // MARK: - Total expense
