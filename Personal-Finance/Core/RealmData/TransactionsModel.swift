@@ -21,3 +21,4 @@ class TransactionModel: Object {
     @Persisted var notes: String?
     @Persisted var receiptImageData: Data?
 }
+

@@ -27,66 +27,70 @@ struct HomeView: View {
             }
             .navigationBarHidden(true)
             .onAppear {
-                viewModel.updateBalances()
-                let transactions = TransactionManager.getAllTransactions()
-                print("ALLData\(transactions)")
-
+                loadData()
             }
         }
     }
-}
-
-// MARK: - Private Views
-private extension HomeView {
     
-    var headerSection: some View {
+    // MARK: - Header Section
+    private var headerSection: some View {
         HStack {
-            // Profile Picture
-            Circle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: 50, height: 50)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .foregroundColor(.gray)
-                )
-            
-            // Welcome Text
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Welcome back,")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text(viewModel.userName)
-                    .font(.title2)
-                    .fontWeight(.bold)
-            }
-            
+            profilePicture
+            welcomeText
             Spacer()
-            
-            // Action Buttons
-            HStack(spacing: 15) {
-                Button(action: {}) {
-                    ZStack(alignment: .topTrailing) {
-                        Image(systemName: "bell.fill")
-                            .font(.title3)
-                            .foregroundColor(.black)
-                            .frame(width: 45, height: 45)
-                            .background(Color.white)
-                            .clipShape(Circle())
-                        
-                        Circle()
-                            .fill(Color.red)
-                            .frame(width: 10, height: 10)
-                            .offset(x: -8, y: 8)
-                    }
-                }
-            }
+            actionButtons
         }
         .padding(.horizontal, 20)
         .padding(.top, 10)
         .padding(.bottom, 20)
     }
     
-    var balanceCardSection: some View {
+    // MARK: - Profile Picture
+    private var profilePicture: some View {
+        Circle()
+            .fill(Color.gray.opacity(0.3))
+            .frame(width: 50, height: 50)
+            .overlay(
+                Image(systemName: "person.fill")
+                    .foregroundColor(.gray)
+            )
+    }
+    
+    // MARK: - Welcome Text
+    private var welcomeText: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Welcome back,")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+            Text(viewModel.userName)
+                .font(.title2)
+                .fontWeight(.bold)
+        }
+    }
+    
+    // MARK: - Action Buttons
+    private var actionButtons: some View {
+        HStack(spacing: 15) {
+            Button(action: {}) {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "bell.fill")
+                        .font(.title3)
+                        .foregroundColor(.black)
+                        .frame(width: 45, height: 45)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                    
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 10, height: 10)
+                        .offset(x: -8, y: 8)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Balance Card Section
+    private var balanceCardSection: some View {
         VStack(spacing: 0) {
             ZStack {
                 RoundedRectangle(cornerRadius: 25)
@@ -94,7 +98,7 @@ private extension HomeView {
                     .frame(height: 220)
                 
                 VStack(spacing: 25) {
-                    totalBalance
+                    totalBalanceView
                     incomeExpenseRow
                 }
                 .padding(25)
@@ -103,7 +107,8 @@ private extension HomeView {
         .padding(.horizontal, 20)
     }
     
-    var totalBalance: some View {
+    // MARK: - Total Balance View
+    private var totalBalanceView: some View {
         VStack(alignment: .center, spacing: 8) {
             Text("Total Balance")
                 .font(.headline)
@@ -115,184 +120,155 @@ private extension HomeView {
         .frame(maxWidth: .infinity, alignment: .center)
     }
     
-    var incomeExpenseRow: some View {
+    // MARK: - Income Expense Row
+    private var incomeExpenseRow: some View {
         HStack(spacing: 0) {
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(Color.green.opacity(0.9))
-                        .frame(width: 40, height: 40)
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Income")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
-                    Text(viewModel.income)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                }
-            }
+            incomeView
             
             Rectangle()
                 .fill(Color.white.opacity(0.5))
                 .frame(width: 1, height: 40)
                 .padding(.horizontal, 15)
             
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(Color.red.opacity(0.9))
-                        .frame(width: 40, height: 40)
-                    Image(systemName: "chart.line.downtrend.xyaxis")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Expense")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
-                    Text(viewModel.expense)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                }
-            }
+            expenseView
         }
         .frame(maxWidth: .infinity)
     }
     
-    var analyticsSection: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack {
-                Text("Analytics")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                // Period Picker Button
-                Button(action: {
-                    viewModel.showPeriodPicker.toggle()
-                }) {
-                    HStack(spacing: 5) {
-                        Text(viewModel.selectedPeriod.rawValue)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Image(systemName: "chevron.up.chevron.down")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                }
-                .actionSheet(isPresented: $viewModel.showPeriodPicker) {
-                    ActionSheet(
-                        title: Text("Select Period"),
-                        buttons: AnalyticsPeriod.allCases.map { period in
-                            .default(Text(period.rawValue)) {
-                                viewModel.selectPeriod(period)
-                            }
-                        } + [.cancel()]
-                    )
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 15)
-            
-            // Chart Card
+    // MARK: - Income View
+    private var incomeView: some View {
+        HStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.white)
-                    .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
-                
-                VStack(alignment: .leading, spacing: 20) {
-                    // Legend
-                    HStack(spacing: 8) {
-                        Circle()
-                            .fill(Color.black)
-                            .frame(width: 10, height: 10)
-                        Text("Expenses")
-                            .font(.subheadline)
-                            .foregroundColor(.black)
-                    }
-                    
-                    // Chart
-                    Chart(viewModel.currentExpenseData) { item in
-                        LineMark(
-                            x: .value("Period", item.label),
-                            y: .value("Value", item.value)
-                        )
-                        .foregroundStyle(Color.black)
-                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                        .interpolationMethod(.catmullRom)
-                        
-                        AreaMark(
-                            x: .value("Period", item.label),
-                            y: .value("Value", item.value)
-                        )
-                        .foregroundStyle(
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.gray.opacity(0.3), Color.clear]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .interpolationMethod(.catmullRom)
-                        
-                        if let selectedLabel = viewModel.selectedLabel, selectedLabel == item.label {
-                            PointMark(
-                                x: .value("Period", item.label),
-                                y: .value("Value", item.value)
-                            )
-                            .foregroundStyle(Color.black)
-                            .symbolSize(100)
-                            
-                            RuleMark(x: .value("Period", item.label))
-                                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
-                                .foregroundStyle(Color.gray.opacity(0.5))
-                                .annotation(position: .bottom, spacing: 10) {
-                                    VStack(spacing: 5) {
-                                        Text(item.label)
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                        Text("value : \(Int(item.value))")
-                                            .font(.subheadline)
-                                    }
-                                    .padding(.horizontal, 15)
-                                    .padding(.vertical, 10)
-                                    .background(Color.white)
-                                    .cornerRadius(12)
-                                    .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-                                }
-                        }
-                    }
-                    .frame(height: 200)
-                    .chartXAxis {
-                        AxisMarks(values: .automatic) { value in
-                            if let label = value.as(String.self) {
-                                AxisValueLabel {
-                                    Text(label)
-                                        .font(.caption)
-                                        .foregroundStyle(viewModel.selectedLabel == label ? Color.black : Color.gray)
-                                        .fontWeight(viewModel.selectedLabel == label ? .semibold : .regular)
-                                        .onTapGesture {
-                                            viewModel.selectedLabel = label
-                                        }
-                                }
-                            }
-                        }
-                    }
-                    .chartYAxis(.hidden)
-                    .chartXSelection(value: $viewModel.selectedLabel)
-                }
-                .padding(25)
+                Circle()
+                    .fill(Color.green.opacity(0.9))
+                    .frame(width: 40, height: 40)
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
             }
-            .padding(.horizontal, 20)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Income")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+                Text(viewModel.income)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+            }
         }
+    }
+    
+    // MARK: - Expense View
+    private var expenseView: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color.red.opacity(0.9))
+                    .frame(width: 40, height: 40)
+                Image(systemName: "chart.line.downtrend.xyaxis")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Expense")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+                Text(viewModel.expense)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+            }
+        }
+    }
+    
+    // MARK: - Analytics Section
+    private var analyticsSection: some View {
+        VStack(spacing: 0) {
+            analyticsHeader
+            chartCard
+        }
+    }
+    
+    // MARK: - Analytics Header
+    private var analyticsHeader: some View {
+        HStack {
+            Text("Analytics")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            periodPickerButton
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 20)
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Period Picker Button
+    private var periodPickerButton: some View {
+        Button(action: {
+            viewModel.showPeriodPicker.toggle()
+        }) {
+            HStack(spacing: 5) {
+                Text(viewModel.selectedPeriod.rawValue)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+        }
+        .actionSheet(isPresented: $viewModel.showPeriodPicker) {
+            ActionSheet(
+                title: Text("Select Period"),
+                buttons: AnalyticsPeriod.allCases.map { period in
+                        .default(Text(period.rawValue)) {
+                            viewModel.selectPeriod(period)
+                        }
+                } + [.cancel()]
+            )
+        }
+    }
+    
+    // MARK: - Chart Card
+    private var chartCard: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 25)
+                .fill(Color.white)
+                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+            
+            VStack(alignment: .leading, spacing: 20) {
+                chartLegend
+                ExpenseLineChart(
+                    data: viewModel.currentExpenseData,
+                    selectedLabel: $viewModel.selectedLabel
+                )
+                
+            }
+            .padding(25)
+        }
+        .padding(.horizontal, 20)
+    }
+    
+    // MARK: - Chart Legend
+    private var chartLegend: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(Color.black)
+                .frame(width: 10, height: 10)
+            Text("Expenses")
+                .font(.subheadline)
+                .foregroundColor(.black)
+        }
+    }
+}
+// MARK: - Actions
+extension HomeView {
+    private func loadData() {
+        viewModel.updateBalances()
+        let transactions = TransactionManager.getAllTransactions()
+        print("ALLData\(transactions)")
     }
 }
 

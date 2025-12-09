@@ -7,228 +7,132 @@
 
 import SwiftUI
 
+// MARK: - Colors
+extension Color {
+    static let background = Color("Background")
+    static let card = Color("Card")
+    static let border = Color("Border")
+    static let expenseRed = Color.red
+    static let incomeGreen = Color.green
+}
+
+// MARK: - Activity View
 struct ActivityView: View {
-    @State private var searchText = ""
-    @State private var showFilter = false
+    @StateObject private var viewModel = ActivityViewModel()
     
     var body: some View {
         MobileWrapper {
             VStack(spacing: 0) {
+                
                 // Header
-                VStack(spacing: 24) {
-                    // Navigation Bar
-                    HStack {
-                        HStack(spacing: 16) {
-                            NavigationLink(destination: HomeView()) {
-                                Circle()
-                                    .fill(Color.card)
-                                    .frame(width: 40, height: 40)
-                                    .overlay(
-                                        Image(systemName: "chevron.left")
-                                            .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.primary)
-                                    )
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.border, lineWidth: 1)
-                                    )
-                            }
+                VStack(spacing: 16) {
+                    Text("Transactions")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 10)
+                    
+                    // Search + Filter
+                    HStack(spacing: 12) {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.secondary)
+                                .padding(.leading, 16)
                             
-                            Text("Transactions")
-                                .font(.system(size: 20, weight: .bold))
+                            TextField("Search transactions...", text: $viewModel.searchText)
+                                .padding(.vertical, 12)
+                                .padding(.trailing, 16)
                         }
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            showFilter.toggle()
-                        }) {
-                            Circle()
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
                                 .fill(Color.card)
-                                .frame(width: 40, height: 40)
                                 .overlay(
-                                    Image(systemName: "line.3.horizontal.decrease.circle")
-                                        .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.primary)
-                                )
-                                .overlay(
-                                    Circle()
+                                    RoundedRectangle(cornerRadius: 20)
                                         .stroke(Color.border, lineWidth: 1)
                                 )
+                        )
+                        .frame(height: 48)
+                        
+                        Button(action: { viewModel.showFilter.toggle() }) {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.primary)
+                                .padding()
+                                .background(
+                                    Circle()
+                                        .fill(Color.card)
+                                        .overlay(Circle().stroke(Color.border, lineWidth: 1))
+                                )
                         }
                     }
-                    
-                    // Search Bar
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 20))
-                            .foregroundColor(.secondary)
-                            .padding(.leading, 16)
-                        
-                        TextField("Search transactions...", text: $searchText)
-                            .font(.system(size: 16))
-                            .padding(.vertical, 12)
-                            .padding(.trailing, 16)
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.card)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.border, lineWidth: 1)
-                            )
-                    )
-                    .frame(height: 48)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 48)
-                .padding(.bottom, 24)
+                .padding(.bottom, 16)
                 .background(Color.background)
                 .zIndex(1)
                 
                 // Transactions List
                 ScrollView {
-                    LazyVStack(spacing: 24) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Today")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.secondary)
-                            
-                            VStack(spacing: 12) {
-                                TransactionItem(
-                                    title: "Apple Store",
-                                    category: "Electronics",
-                                    amount: 1299.00,
-                                    time: "10:42 AM",
-                                    type: .expense,
-                                    iconName: "cart.fill"
-                                )
-                                
-                                TransactionItem(
-                                    title: "Starbucks",
-                                    category: "Food & Drink",
-                                    amount: 5.40,
-                                    time: "08:15 AM",
-                                    type: .expense,
-                                    iconName: "cup.and.saucer.fill"
-                                )
-                            }
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Yesterday")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.secondary)
-                            
-                            VStack(spacing: 12) {
-                                TransactionItem(
-                                    title: "Uber Trip",
-                                    category: "Transport",
-                                    amount: 24.50,
-                                    time: "8:30 PM",
-                                    type: .expense,
-                                    iconName: "car.fill"
-                                )
-                                
-                                TransactionItem(
-                                    title: "Freelance Work",
-                                    category: "Design",
-                                    amount: 850.00,
-                                    time: "4:15 PM",
-                                    type: .income,
-                                    iconName: "paintbrush.fill"
-                                )
-                            }
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("October 24")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.secondary)
-                            
-                            VStack(spacing: 12) {
-                                TransactionItem(
-                                    title: "Whole Foods",
-                                    category: "Groceries",
-                                    amount: 142.80,
-                                    time: "12:20 PM",
-                                    type: .expense,
-                                    iconName: "bag.fill"
-                                )
-                                
-                                TransactionItem(
-                                    title: "Netflix Subscription",
-                                    category: "Entertainment",
-                                    amount: 15.99,
-                                    time: "09:00 AM",
-                                    type: .expense,
-                                    iconName: "play.tv.fill"
-                                )
-                                
-                                TransactionItem(
-                                    title: "Gas Station",
-                                    category: "Transport",
-                                    amount: 45.00,
-                                    time: "07:30 AM",
-                                    type: .expense,
-                                    iconName: "fuelpump.fill"
-                                )
+                    LazyVStack(alignment: .leading, spacing: 24, pinnedViews: [.sectionHeaders]) {
+                        ForEach(viewModel.groupedTransactions, id: \.key) { date, items in
+                            Section(
+                                header: Text(date)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 24)
+                                    .padding(.top, 8)
+                            ) {
+                                ForEach(items) { transaction in
+                                    TransactionItem(transaction: transaction)
+                                        .padding(.horizontal, 24)
+                                }
                             }
                         }
                     }
-                    .padding(.horizontal, 24)
                     .padding(.bottom, 96)
                 }
             }
-            .sheet(isPresented: $showFilter) {
+            .sheet(isPresented: $viewModel.showFilter) {
                 FilterView()
             }
-            
-            
         }
     }
 }
 
-// Transaction Item Component
+// MARK: - Transaction Item
 struct TransactionItem: View {
-    let title: String
-    let category: String
-    let amount: Double
-    let time: String
-    let type: TransactionType
-    let iconName: String
+    let transaction: Transaction
     
     var body: some View {
         HStack(spacing: 16) {
-            // Icon Container
             Circle()
                 .fill(Color.card)
                 .frame(width: 44, height: 44)
                 .overlay(
-                    Image(systemName: iconName)
+                    Image(systemName: transaction.iconName)
                         .font(.system(size: 20))
                         .foregroundColor(.primary)
                 )
             
-            // Transaction Details
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
+                Text(transaction.title)
                     .font(.system(size: 16, weight: .medium))
-                
-                Text(category)
+                Text(transaction.category)
                     .font(.system(size: 14))
                     .foregroundColor(.secondary)
             }
             
             Spacer()
             
-            // Amount and Time
             VStack(alignment: .trailing, spacing: 4) {
-                Text(type == .expense ? "-$\(amount, specifier: "%.2f")" : "+$\(amount, specifier: "%.2f")")
+                Text(transaction.type == .expense
+                     ? "-$\(transaction.amount, specifier: "%.2f")"
+                     : "+$\(transaction.amount, specifier: "%.2f")")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(type == .expense ? .expenseRed : .incomeGreen)
+                    .foregroundColor(transaction.type == .expense ? .expenseRed : .incomeGreen)
                 
-                Text(time)
+                Text(transaction.time)
                     .font(.system(size: 14))
                     .foregroundColor(.secondary)
             }
@@ -244,20 +148,7 @@ struct TransactionItem: View {
     }
 }
 
-enum TransactionType {
-    case expense, income
-}
-
-// Color Extensions
-extension Color {
-    static let background = Color("Background")
-    static let card = Color("Card")
-    static let border = Color("Border")
-    static let expenseRed = Color.red
-    static let incomeGreen = Color.green
-}
-
-// Filter View (placeholder)
+// MARK: - Filter View
 struct FilterView: View {
     var body: some View {
         NavigationView {
@@ -268,22 +159,14 @@ struct FilterView: View {
     }
 }
 
-
-
-// Mobile Wrapper
+// MARK: - Mobile Wrapper
 struct MobileWrapper<Content: View>: View {
     let content: Content
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             ZStack {
-                Color.background
-                    .edgesIgnoringSafeArea(.all)
-                
+                Color.background.edgesIgnoringSafeArea(.all)
                 content
             }
         }
@@ -291,8 +174,7 @@ struct MobileWrapper<Content: View>: View {
     }
 }
 
+// MARK: - Preview
 #Preview {
     ActivityView()
 }
-
-
